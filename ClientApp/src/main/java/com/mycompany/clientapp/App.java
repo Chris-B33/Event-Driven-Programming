@@ -62,7 +62,7 @@ public class App extends Application {
                 input = new BufferedReader(new InputStreamReader(link.getInputStream()));
                 output = new PrintWriter(link.getOutputStream(), true);
                 
-                action = actionField.getText();
+                action = actionField.getText().toUpperCase();
                 description = descriptionField.getText();
                 
                 // Message
@@ -73,6 +73,8 @@ public class App extends Application {
                 String response;
                 response = input.readLine();
                 responseLabel.setText("Server Response: " + response);
+                
+                // Handling Responses
                 if (response.equals("TERMINATE")) {
                     System.exit(0);
                 }
@@ -82,8 +84,8 @@ public class App extends Application {
                 e.printStackTrace();
             }
         });
-        VBox box = new VBox(responseLabel, actionField, descriptionField, sendButton);
         
+        VBox box = new VBox(responseLabel, actionField, descriptionField, sendButton);
         scene = new Scene(box, 640, 480);
         stage.setScene(scene);
         stage.show();

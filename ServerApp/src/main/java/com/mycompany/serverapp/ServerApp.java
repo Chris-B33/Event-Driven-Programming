@@ -4,8 +4,9 @@ import java.io.*;
 import java.net.*;
 
 public class ServerApp { 
+    private static int borderNum = 40;
+    
     private static ServerSocket servSock;
-    private static boolean running = true;
     private static final int PORT = 1234;
 
     private static Socket link;
@@ -19,21 +20,23 @@ public class ServerApp {
       Main Method
     */
     public static void main(String[] args) {
-      System.out.println("Opening port...\n");
-      try 
-      {
-          servSock = new ServerSocket(PORT);
-      }
-      catch(IOException e) 
-      {
-           System.out.println("Unable to attach to port!");
-           System.exit(1);
-      }
+        System.out.println("-".repeat(borderNum));
+        System.out.println("[INITIALIZE] Opening Port " + PORT);
+        System.out.println("-".repeat(borderNum));
+        try 
+        {
+            servSock = new ServerSocket(PORT);
+        }
+        catch(IOException e) 
+        {
+             System.out.println("[ERROR] Unable to attach to port!");
+             System.out.println("-".repeat(borderNum));
+             System.exit(1);
+        }
 
-      while (running) {
-          run();
-      }
-
+        while (true) {
+            run();
+        }
     }
   
     /*
@@ -64,8 +67,13 @@ public class ServerApp {
                     closeConnection();
                     break;
                 default:
+                    output.println("Invalid");
                     break;
             }
+            
+            System.out.println("[ACTION]:      " + action);
+            System.out.println("[DESCRIPTION]: " + description);
+            System.out.println("-".repeat(borderNum));
         }
         catch(IOException e)
         {
@@ -77,31 +85,27 @@ public class ServerApp {
       addToSchedule Method
     */
     private static void addToSchedule() {
-        System.out.println("Adding...");
-        output.println("");
+        output.println("ADD");
     }
 
     /*
       removeFromSchedule Method
     */
     private static void removeFromSchedule() {
-        System.out.println("Removing...");
-        output.println("");
+        output.println("REMOVE");
     }
 
     /*
       displaySchedule Method
     */
     private static void displaySchedule() {
-        System.out.println("Displaying...");
-        output.println("");
+        output.println("DISPLAY");
     }
 
     /*
       closeConnection Method
     */
     private static void closeConnection() {
-        System.out.println("Closing...");
         output.println("TERMINATE");
         try {
             link.close();
