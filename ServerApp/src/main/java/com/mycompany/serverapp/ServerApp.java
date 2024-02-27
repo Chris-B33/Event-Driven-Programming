@@ -2,9 +2,14 @@ package com.mycompany.serverapp;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ServerApp { 
-    private static int borderNum = 40;
+    private static final int borderNum = 75;
     
     private static ServerSocket servSock;
     private static final int PORT = 1234;
@@ -15,6 +20,9 @@ public class ServerApp {
 
     private static String action;
     private static String description;
+    
+    // Storage
+    private static HashMap<String, Schedule> courseSchedules;
 
     /*
       Main Method
@@ -53,6 +61,10 @@ public class ServerApp {
             action = input.readLine().toUpperCase();
             description = input.readLine();
             
+            System.out.println("[ACTION]:      " + action);
+            System.out.println("[DESCRIPTION]: " + description);
+            System.out.println("-".repeat(borderNum));
+            
             switch (action) {
                 case "ADD":
                     addToSchedule();
@@ -70,10 +82,6 @@ public class ServerApp {
                     output.println("Invalid");
                     break;
             }
-            
-            System.out.println("[ACTION]:      " + action);
-            System.out.println("[DESCRIPTION]: " + description);
-            System.out.println("-".repeat(borderNum));
         }
         catch(IOException e)
         {
@@ -85,21 +93,96 @@ public class ServerApp {
       addToSchedule Method
     */
     private static void addToSchedule() {
-        output.println("ADD");
+        try {
+            String[] arguments = description.split(" ");
+            String name = arguments[0];
+            LocalDate date = LocalDate.parse(arguments[1]);
+            LocalTime startTime = LocalTime.parse(arguments[2].split("-")[0]);
+            LocalTime endTime = LocalTime.parse(arguments[2].split("-")[1]);
+            
+            // If course exists, continue.
+            // Otherwise, create course schedule.
+            // Check if times clash with any others in course schedule using binary search.
+            // If none are found, add to schedule.
+            // Otherwise, throw exception.
+            if (true) {
+                
+            } else {
+                throw new IncorrectActionException("Class clashes with other classes in course.");
+            }
+            
+            output.println("Added successfully.");
+        }
+        catch (IncorrectActionException e) {
+            System.out.println("[ERROR]: " + e);
+            System.out.println("-".repeat((int)(borderNum)));
+            output.println("Incorrect action.");
+        }
     }
 
     /*
       removeFromSchedule Method
     */
     private static void removeFromSchedule() {
-        output.println("REMOVE");
+        try {
+            if (courseSchedules == null) {
+                throw new IncorrectActionException("No schedules exist.");
+            }
+            
+            String[] arguments = description.split(" ");
+            String name = arguments[0];
+            LocalDate date = LocalDate.parse(arguments[1]);
+            LocalTime startTime = LocalTime.parse(arguments[2].split("-")[0]);
+            LocalTime endTime = LocalTime.parse(arguments[2].split("-")[1]);
+            
+            // If course exists, continue.
+            // Otherwise, throw exception.
+            // Go to course in hashmap.
+            // Use binary search to search for class with matching date, start time and end time.
+            // If found, remove it.
+            // Otherwise, throw exception.
+            Schedule course = courseSchedules.get(name);
+            if (true) {
+
+            } else {
+                throw new IncorrectActionException("No class to remove.");
+            }
+            
+            output.println("Removed successfully.");
+        }
+        catch (IncorrectActionException e) {
+            System.out.println("[ERROR]: " + e);
+            System.out.println("-".repeat((int)(borderNum)));
+            output.println("Incorrect action.");
+        }
     }
 
     /*
       displaySchedule Method
     */
     private static void displaySchedule() {
-        output.println("DISPLAY");
+        try {
+            if (courseSchedules == null) {
+                throw new IncorrectActionException("No schedules exist.");
+            }
+
+            String[] arguments = description.split(" ");
+
+            Schedule cur = courseSchedules.get(arguments[0]);
+            ArrayList<LocalDateTime> startTimes = cur.getStartTimes();
+            ArrayList<LocalDateTime> endTimes = cur.getEndTimes();
+
+            for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
+                System.out.printf("%s -> %s\n", startTimes.get(i), endTimes.get(i));
+            }
+            System.out.println("-".repeat((int)(borderNum)));
+            output.println("Displaying in server console.");
+        } 
+        catch (IncorrectActionException e) {
+            System.out.println("[ERROR]: " + e);
+            System.out.println("-".repeat((int)(borderNum)));
+            output.println("Incorrect action.");
+        }
     }
 
     /*
@@ -110,7 +193,8 @@ public class ServerApp {
         try {
             link.close();
         } catch (IOException e) {
-            System.out.println("Unable to close connection");
+            System.out.println("[ERROR]: Unable to close connection");
+            System.out.println("-".repeat(borderNum));
             System.exit(0);
         }
     }

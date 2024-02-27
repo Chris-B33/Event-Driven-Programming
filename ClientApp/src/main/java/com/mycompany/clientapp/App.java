@@ -39,7 +39,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        
         responseLabel = new Label("Server Response: ");
         actionField = new TextField("");
         descriptionField = new TextField("");
@@ -75,6 +74,8 @@ public class App extends Application {
                 responseLabel.setText("Server Response: " + response);
                 
                 // Handling Responses
+                
+                
                 if (response.equals("TERMINATE")) {
                     System.exit(0);
                 }
