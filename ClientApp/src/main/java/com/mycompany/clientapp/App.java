@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -39,7 +40,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         
-        responseLabel = new Label("Last Response: ");
+        responseLabel = new Label("Server Response: ");
         actionField = new TextField("");
         descriptionField = new TextField("");
         sendButton = new Button("Send");
@@ -71,7 +72,10 @@ public class App extends Application {
                 // Response
                 String response;
                 response = input.readLine();
-                responseLabel.setText("Last Operation: " + response);
+                responseLabel.setText("Server Response: " + response);
+                if (response.equals("TERMINATE")) {
+                    System.exit(0);
+                }
             }
             catch(IOException e)
             {
