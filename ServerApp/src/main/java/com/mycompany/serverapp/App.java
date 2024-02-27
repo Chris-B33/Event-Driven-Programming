@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ServerApp { 
+public class App { 
     private static final int borderNum = 75;
     
     private static ServerSocket servSock;
@@ -102,7 +102,7 @@ public class ServerApp {
             
             // If course exists, continue.
             // Otherwise, create course schedule.
-            // Check if times clash with any others in course schedule using binary search.
+            // Check if times clash with any others in course schedule using binary search (Combine them all into LocalDateTimes).
             // If none are found, add to schedule.
             // Otherwise, throw exception.
             if (true) {
@@ -138,7 +138,7 @@ public class ServerApp {
             // If course exists, continue.
             // Otherwise, throw exception.
             // Go to course in hashmap.
-            // Use binary search to search for class with matching date, start time and end time.
+            // Use binary search to search for class with matching date, start time and end time (Combine them all into LocalDateTimes).
             // If found, remove it.
             // Otherwise, throw exception.
             Schedule course = courseSchedules.get(name);
