@@ -2,13 +2,14 @@ package com.mycompany.serverapp;
 
 import java.io.*;
 import java.net.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class App { 
+public class App {
+    private static final String[] dayNames = {
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
     private static final int borderNum = 75;
     
     private static ServerSocket servSock;
@@ -21,13 +22,14 @@ public class App {
     private static String action;
     private static String description;
     
-    // Storage
     private static HashMap<String, Schedule> courseSchedules;
 
     /*
       Main Method
     */
     public static void main(String[] args) {
+        courseSchedules = new HashMap<>();
+        
         System.out.println("-".repeat(borderNum));
         System.out.println("[INITIALIZE] Opening Port " + PORT);
         System.out.println("-".repeat(borderNum));
@@ -96,19 +98,19 @@ public class App {
         try {
             String[] arguments = description.split(" ");
             String name = arguments[0];
-            LocalDate date = LocalDate.parse(arguments[1]);
-            LocalTime startTime = LocalTime.parse(arguments[2].split("-")[0]);
-            LocalTime endTime = LocalTime.parse(arguments[2].split("-")[1]);
+            String roomCode = arguments[1];
+            String moduleName = arguments[2];
+            int day = Integer.parseInt(arguments[3]);
+            LocalTime startTime = LocalTime.parse(arguments[4].split("-")[0]);
+            LocalTime endTime = LocalTime.parse(arguments[4].split("-")[1]);
             
-            // If course exists, continue.
-            // Otherwise, create course schedule.
-            // Check if times clash with any others in course schedule using binary search (Combine them all into LocalDateTimes).
-            // If none are found, add to schedule.
-            // Otherwise, throw exception.
-            if (true) {
-                
-            } else {
-                throw new IncorrectActionException("Class clashes with other classes in course.");
+            if (!courseSchedules.containsKey(name)) {
+                courseSchedules.put(name, new Schedule());
+            }
+            
+            Schedule courseSchedule = courseSchedules.get(name);
+            if (!courseSchedule.addClassToSchedule(roomCode, moduleName, day, startTime, endTime)) {
+                throw new IncorrectActionException("Class clashes with other booking.");
             }
             
             output.println("Added successfully.");
@@ -130,22 +132,23 @@ public class App {
             }
             
             String[] arguments = description.split(" ");
+            if (description.split(" ").length < 5) {
+                throw new IncorrectActionException("Invalid description.");
+            }
             String name = arguments[0];
-            LocalDate date = LocalDate.parse(arguments[1]);
-            LocalTime startTime = LocalTime.parse(arguments[2].split("-")[0]);
-            LocalTime endTime = LocalTime.parse(arguments[2].split("-")[1]);
+            String roomCode = arguments[1];
+            String moduleName = arguments[2];
+            int day = Integer.parseInt(arguments[3]);
+            LocalTime startTime = LocalTime.parse(arguments[4].split("-")[0]);
+            LocalTime endTime = LocalTime.parse(arguments[4].split("-")[1]);
             
-            // If course exists, continue.
-            // Otherwise, throw exception.
-            // Go to course in hashmap.
-            // Use binary search to search for class with matching date, start time and end time (Combine them all into LocalDateTimes).
-            // If found, remove it.
-            // Otherwise, throw exception.
-            Schedule course = courseSchedules.get(name);
-            if (true) {
-
-            } else {
-                throw new IncorrectActionException("No class to remove.");
+            if (!courseSchedules.containsKey(name)) {
+                throw new IncorrectActionException("Course doesn't have any classes yet.");
+            }
+            
+            Schedule courseSchedule = courseSchedules.get(name);
+            if (!courseSchedule.removeClassFromSchedule(roomCode, moduleName, day, startTime, endTime)) {
+                throw new IncorrectActionException("No class to remove from specified course.");
             }
             
             output.println("Removed successfully.");
@@ -165,15 +168,19 @@ public class App {
             if (courseSchedules == null) {
                 throw new IncorrectActionException("No schedules exist.");
             }
+            
+            String[] arguments = description.split(" ");           
+            if (!courseSchedules.containsKey(arguments[0])) {
+                throw new IncorrectActionException("Course schedule doesn't exist yet.");
+            }
 
-            String[] arguments = description.split(" ");
-
-            Schedule cur = courseSchedules.get(arguments[0]);
-            ArrayList<LocalDateTime> startTimes = cur.getStartTimes();
-            ArrayList<LocalDateTime> endTimes = cur.getEndTimes();
+            Schedule cur = courseSchedules.get(arguments[0]); 
+            ArrayList<Integer> days = cur.getDays();
+            ArrayList<LocalTime> startTimes = cur.getStartTimes();
+            ArrayList<LocalTime> endTimes = cur.getEndTimes();
 
             for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
-                System.out.printf("%s -> %s\n", startTimes.get(i), endTimes.get(i));
+                System.out.printf("%s: %s -> %s\n", dayNames[days.get(i)], startTimes.get(i), endTimes.get(i));
             }
             System.out.println("-".repeat((int)(borderNum)));
             output.println("Displaying in server console.");
