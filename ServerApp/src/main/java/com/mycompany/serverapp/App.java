@@ -111,9 +111,32 @@ public class App {
             }
             
             Schedule courseSchedule = courseSchedules.get(name);
+            
+            // Check for clashes in other schedules
+            for (String scheduleName : courseSchedules.keySet()) {
+                Schedule curSchedule = courseSchedules.get(scheduleName);
+                if (name.equals(scheduleName)) {
+                    continue;
+                }
+                
+                for (int i=0; i<curSchedule.getNumberOfTimesScheduled(); i++) {
+                    if (
+                            curSchedule.checkForClashWithIndividualClass(
+                                    startTime, endTime, curSchedule.getStartTimes().get(i), curSchedule.getEndTimes().get(i)
+                            ) &&
+                            roomCode.equals(curSchedule.getRoomCodes().get(i))
+                    ) {
+                        throw new IncorrectActionException("Class clashes with other booking.");
+                    }
+                }
+            }
+            
+            // Try add course to schedule
             if (!courseSchedule.addClassToSchedule(roomCode, moduleName, day, startTime, endTime)) {
                 throw new IncorrectActionException("Class clashes with other booking.");
             }
+            
+            
             
             output.println("Added successfully.");
         }
@@ -150,7 +173,7 @@ public class App {
                 throw new IncorrectActionException("No class to remove from specified course.");
             }
             
-            output.println("Removed successfully.");
+            output.printf("Room %s is now free at %s until %s.\n", roomCode, startTime, endTime);
         }
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);

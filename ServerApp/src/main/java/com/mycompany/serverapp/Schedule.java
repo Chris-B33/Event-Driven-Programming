@@ -51,21 +51,22 @@ public class Schedule {
                 continue;
             }
             
-            if (
-                    ((startTimes.get(i).compareTo(start) <= 0 && endTimes.get(i).compareTo(start) > 0) ||
-                    (startTimes.get(i).compareTo(end) < 0 && endTimes.get(i).compareTo(end) >= 0))
-            ) {
-                return false;
+            if (this.checkForClashWithIndividualClass(start, startTimes.get(i), end, endTimes.get(i))) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+    
+    public boolean checkForClashWithIndividualClass(LocalTime start1, LocalTime start2, LocalTime end1, LocalTime end2) {
+            return ((start1.compareTo(start2) <= 0 && start1.compareTo(end2) > 0) ||
+                    (end1.compareTo(start2) < 0 && end1.compareTo(end2) >= 0));
     }
     
     public boolean addClassToSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
         if (this.checkForClashInSchedule(roomCode, moduleName, day, start, end)) {
             return false;
         }
-        // Need to check for clashes in other schedules
         
         roomCodes.add(roomCode);
         moduleNames.add(moduleName);
@@ -85,8 +86,11 @@ public class Schedule {
                     start == startTimes.get(i) &&
                     end == startTimes.get(i)
             ) {
-                return false;
+                break;
             }
+        }
+        if (i == this.getNumberOfTimesScheduled()) {
+            return false;
         }
         
         roomCodes.remove(i);
