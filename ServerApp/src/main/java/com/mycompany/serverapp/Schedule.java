@@ -45,20 +45,27 @@ public class Schedule {
         return this.startTimes.size();
     }
     
-    public boolean addClassToSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
+    public boolean checkForClashInSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
         for(int i=0; i<this.getNumberOfTimesScheduled(); i++) {
             if (day != days.get(i)) {
                 continue;
             }
             
             if (
-                    ((startTimes.get(i).compareTo(start) <= 0 && endTimes.get(i).compareTo(start) >= 0) ||
-                    (startTimes.get(i).compareTo(end) <= 0 && endTimes.get(i).compareTo(end) >= 0)) &&
-                    roomCode.equals(roomCodes.get(i))
+                    ((startTimes.get(i).compareTo(start) <= 0 && endTimes.get(i).compareTo(start) > 0) ||
+                    (startTimes.get(i).compareTo(end) < 0 && endTimes.get(i).compareTo(end) >= 0))
             ) {
                 return false;
             }
         }
+        return true;
+    }
+    
+    public boolean addClassToSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
+        if (this.checkForClashInSchedule(roomCode, moduleName, day, start, end)) {
+            return false;
+        }
+        // Need to check for clashes in other schedules
         
         roomCodes.add(roomCode);
         moduleNames.add(moduleName);

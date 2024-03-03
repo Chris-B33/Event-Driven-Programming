@@ -81,13 +81,15 @@ public class App {
                     closeConnection();
                     break;
                 default:
-                    output.println("Invalid");
-                    break;
+                    throw new IncorrectActionException();
             }
         }
         catch(IOException e)
         {
             e.printStackTrace();
+        }
+        catch (IncorrectActionException e) {
+            output.println(e.getMessage());
         }
     }
   
@@ -101,8 +103,8 @@ public class App {
             String roomCode = arguments[1];
             String moduleName = arguments[2];
             int day = Integer.parseInt(arguments[3]);
-            LocalTime startTime = LocalTime.parse(arguments[4].split("-")[0]);
-            LocalTime endTime = LocalTime.parse(arguments[4].split("-")[1]);
+            LocalTime startTime = LocalTime.parse(arguments[4]);
+            LocalTime endTime = LocalTime.parse(arguments[5]);
             
             if (!courseSchedules.containsKey(name)) {
                 courseSchedules.put(name, new Schedule());
@@ -118,7 +120,7 @@ public class App {
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);
             System.out.println("-".repeat((int)(borderNum)));
-            output.println("Incorrect action.");
+            output.println(e.getMessage());
         }
     }
 
@@ -132,15 +134,12 @@ public class App {
             }
             
             String[] arguments = description.split(" ");
-            if (description.split(" ").length < 5) {
-                throw new IncorrectActionException("Invalid description.");
-            }
             String name = arguments[0];
             String roomCode = arguments[1];
             String moduleName = arguments[2];
             int day = Integer.parseInt(arguments[3]);
-            LocalTime startTime = LocalTime.parse(arguments[4].split("-")[0]);
-            LocalTime endTime = LocalTime.parse(arguments[4].split("-")[1]);
+            LocalTime startTime = LocalTime.parse(arguments[4]);
+            LocalTime endTime = LocalTime.parse(arguments[5]);
             
             if (!courseSchedules.containsKey(name)) {
                 throw new IncorrectActionException("Course doesn't have any classes yet.");
@@ -156,7 +155,7 @@ public class App {
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);
             System.out.println("-".repeat((int)(borderNum)));
-            output.println("Incorrect action.");
+            output.println(e.getMessage());
         }
     }
 
@@ -175,12 +174,14 @@ public class App {
             }
 
             Schedule cur = courseSchedules.get(arguments[0]); 
+            ArrayList<String> moduleNames = cur.getModuleNames();
+            ArrayList<String> roomCodes = cur.getModuleNames();
             ArrayList<Integer> days = cur.getDays();
             ArrayList<LocalTime> startTimes = cur.getStartTimes();
             ArrayList<LocalTime> endTimes = cur.getEndTimes();
 
             for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
-                System.out.printf("%s: %s -> %s\n", dayNames[days.get(i)], startTimes.get(i), endTimes.get(i));
+                System.out.printf("%s, %s, %s: %s -> %s\n", moduleNames.get(i), roomCodes.get(i), dayNames[days.get(i)], startTimes.get(i), endTimes.get(i));
             }
             System.out.println("-".repeat((int)(borderNum)));
             output.println("Displaying in server console.");
@@ -188,7 +189,7 @@ public class App {
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);
             System.out.println("-".repeat((int)(borderNum)));
-            output.println("Incorrect action.");
+            output.println(e.getMessage());
         }
     }
 
