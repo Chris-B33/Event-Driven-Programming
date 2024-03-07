@@ -51,12 +51,9 @@ public class App extends Application {
     Label roomLabel;
     TextField room;
     MenuButton day;
-    Label dayLabel;
     int dayNum;
     MenuButton startTime;
-    Label startLabel;
     MenuButton endTime;
-    Label endLabel;
     LocalTime start;
     LocalTime end;
     VBox box;
@@ -77,18 +74,15 @@ public class App extends Application {
         modLabel = new Label("Module:");
         room = new TextField("");
         roomLabel = new Label("Room code:");
-        day = new MenuButton("Select Day");
         
-        dayLabel = new Label("");
-        Days(day);
+        day = new MenuButton("Select Day");
+        days(day);
         
         startTime = new MenuButton("Select Start Time");
-        startLabel = new Label("");
-        times(startTime, startLabel, start);
+        times(startTime, start);
         
         endTime = new MenuButton("Select End Time");
-        endLabel = new Label("");
-        times(endTime, endLabel, end);
+        times(endTime, end);
         
         powerButton.setPrefWidth(150);
         powerButton.setPrefHeight(50);
@@ -102,13 +96,13 @@ public class App extends Application {
         addButton.setOnAction((ActionEvent a) -> {
                     if(addButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(addButton);
-                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, dayLabel, startTime, endTime, sendButton);
+                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
                         box.getChildren().removeAll(removeButton,displayButton, powerButton);
                         action = "ADD";
                     }else{
                         style(addButton);
                         box.getChildren().addAll(removeButton, displayButton, powerButton);
-                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, dayLabel, startTime, endTime, sendButton);
+                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
                         action = "";
                     }
             });
@@ -116,13 +110,13 @@ public class App extends Application {
         removeButton.setOnAction((ActionEvent r) -> {
                     if(removeButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(removeButton);
-                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, dayLabel, startTime, endTime, sendButton);
+                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
                         box.getChildren().removeAll(addButton,displayButton, powerButton);
                         action = "REMOVE";
                     }else{
                         style(removeButton);
                         box.getChildren().addAll(addButton, displayButton, powerButton);
-                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, dayLabel, startTime, endTime, sendButton);
+                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
                         action = "";
                     }
             });
@@ -216,7 +210,7 @@ public class App extends Application {
         b.setPrefHeight(100);
     }
 
-    public void Days(MenuButton d){
+    public void days(MenuButton d){
         MenuItem m1 = new MenuItem("Monday");
         MenuItem m2 = new MenuItem("Tuesday");
         MenuItem m3 = new MenuItem("Wednesday");
@@ -227,11 +221,9 @@ public class App extends Application {
 
         d.getItems().addAll(m1, m2, m3, m4, m5, m6, m7);
 
-        EventHandler<ActionEvent> pickDay = new EventHandler<ActionEvent>(){
-                public void handle(ActionEvent d){
-                    dayLabel.setText(((MenuItem)d.getSource()).getText());
-                }
-            };
+        EventHandler<ActionEvent> pickDay = (ActionEvent day1) -> {
+            d.setText(((MenuItem) day1.getSource()).getText());
+        };
 
         m1.setOnAction(pickDay);
         m2.setOnAction(pickDay);
@@ -241,24 +233,24 @@ public class App extends Application {
         m6.setOnAction(pickDay);
         m7.setOnAction(pickDay);
 
-        if(dayLabel.getText().equals(m1.getText())){
+        if(d.getText().equals(m1.getText())){
             dayNum = 1;
-        }else if(dayLabel.getText().equals( m2.getText())){
+        }else if(d.getText().equals(m2.getText())){
             dayNum = 2;
-        }else if(dayLabel.getText().equals(m3.getText())){
+        }else if(d.getText().equals(m3.getText())){
             dayNum = 3;
-        }else if(dayLabel.getText().equals(m4.getText())){
+        }else if(d.getText().equals(m4.getText())){
             dayNum = 4;
-        }else if(dayLabel.getText().equals(m5.getText())){
+        }else if(d.getText().equals(m5.getText())){
             dayNum = 5;
-        }else if(dayLabel.getText().equals(m6.getText())){
+        }else if(d.getText().equals(m6.getText())){
             dayNum = 6;
-        }else if(dayLabel.getText().equals(m7.getText())){
+        }else if(d.getText().equals(m7.getText())){
             dayNum = 7;
         }
     }
 
-    public void times(MenuButton t, Label l, LocalTime e){
+    public void times(MenuButton t, LocalTime e){
         MenuItem t1 = new MenuItem("09:00");
         MenuItem t2 = new MenuItem("10:00");
         MenuItem t3 = new MenuItem("11:00");
@@ -272,11 +264,9 @@ public class App extends Application {
 
         t.getItems().addAll(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
 
-        EventHandler<ActionEvent> pickTime = new EventHandler<ActionEvent>(){
-                public void handle(ActionEvent s){
-                    l.setText(((MenuItem)s.getSource()).getText());
-                }
-            };
+        EventHandler<ActionEvent> pickTime = (ActionEvent s) -> {
+            t.setText(((MenuItem)s.getSource()).getText());
+        };
             
         t1.setOnAction(pickTime);
         t2.setOnAction(pickTime);
@@ -289,25 +279,25 @@ public class App extends Application {
         t9.setOnAction(pickTime);
         t10.setOnAction(pickTime);
         
-        if(l.getText().equals(t1.getText())){
+        if(t.getText().equals(t1.getText())){
             e = LocalTime.parse("09:00");
-        }else if(l.getText().equals(t2.getText())){
+        }else if(t.getText().equals(t2.getText())){
             e = LocalTime.parse("10:00");
-        }else if(l.getText().equals(t3.getText())){
+        }else if(t.getText().equals(t3.getText())){
             e = LocalTime.parse("11:00");
-        }else if(l.getText().equals(t4.getText())){
+        }else if(t.getText().equals(t4.getText())){
             e = LocalTime.parse("12:00");
-        }else if(l.getText().equals(t5.getText())){
+        }else if(t.getText().equals(t5.getText())){
             e = LocalTime.parse("13:00");
-        }else if(l.getText().equals(t6.getText())){
+        }else if(t.getText().equals(t6.getText())){
             e = LocalTime.parse("14:00");
-        }else if(l.getText().equals(t7.getText())){
+        }else if(t.getText().equals(t7.getText())){
             e = LocalTime.parse("15:00");
-        }else if(l.getText().equals(t8.getText())){
+        }else if(t.getText().equals(t8.getText())){
             e = LocalTime.parse("16:00");
-        }else if(l.getText().equals(t9.getText())){
+        }else if(t.getText().equals(t9.getText())){
             e = LocalTime.parse("17:00");
-        }else if(l.getText().equals(t10.getText())){
+        }else if(t.getText().equals(t10.getText())){
             e = LocalTime.parse("18:00");
         }
     }
