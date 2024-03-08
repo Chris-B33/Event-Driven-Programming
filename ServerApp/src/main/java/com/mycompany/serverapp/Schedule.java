@@ -45,7 +45,12 @@ public class Schedule {
         return this.startTimes.size();
     }
     
-    public boolean checkForClashInSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
+    public boolean checkForClashWithIndividualClass(LocalTime start1, LocalTime start2, LocalTime end1, LocalTime end2) {
+            return ((start1.compareTo(start2) >= 0 && start1.compareTo(end2) <= 0) ||
+                    (end1.compareTo(start2) >= 0 && end1.compareTo(end2) <= 0));
+    }
+   
+    public boolean checkForClashInSchedule(String roomCode, int day, LocalTime start, LocalTime end) {
         for(int i=0; i<this.getNumberOfTimesScheduled(); i++) {
             if (day != days.get(i)) {
                 continue;
@@ -58,13 +63,8 @@ public class Schedule {
         return false;
     }
     
-    public boolean checkForClashWithIndividualClass(LocalTime start1, LocalTime start2, LocalTime end1, LocalTime end2) {
-            return ((start1.compareTo(start2) <= 0 && start1.compareTo(end2) > 0) ||
-                    (end1.compareTo(start2) < 0 && end1.compareTo(end2) >= 0));
-    }
-    
     public boolean addClassToSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
-        if (this.checkForClashInSchedule(roomCode, moduleName, day, start, end)) {
+        if (this.checkForClashInSchedule(roomCode, day, start, end)) {
             return false;
         }
         
@@ -78,26 +78,22 @@ public class Schedule {
     
     public boolean removeClassFromSchedule(String roomCode, String moduleName, int day, LocalTime start, LocalTime end) {
         int i;
-        for(i=0; i<this.getNumberOfTimesScheduled() - 1; i++) {
+        for(i=0; i<this.getNumberOfTimesScheduled(); i++) {
             if (
                     roomCode.equals(roomCodes.get(i)) &&
                     moduleName.equals(moduleNames.get(i)) &&
                     day == days.get(i) &&
-                    start == startTimes.get(i) &&
-                    end == startTimes.get(i)
+                    start.equals(startTimes.get(i)) &&
+                    end.equals(endTimes.get(i))
             ) {
-                break;
+                roomCodes.remove(i);
+                moduleNames.remove(i);
+                days.remove(i);
+                startTimes.remove(i);
+                endTimes.remove(i);
+                return true;
             }
-        }
-        if (i == this.getNumberOfTimesScheduled()) {
-            return false;
-        }
-        
-        roomCodes.remove(i);
-        moduleNames.remove(i);
-        days.remove(i);
-        startTimes.remove(i);
-        endTimes.remove(i);
-        return true;
+        }        
+        return false;
     }
 }

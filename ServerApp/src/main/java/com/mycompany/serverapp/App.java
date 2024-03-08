@@ -3,6 +3,7 @@ package com.mycompany.serverapp;
 import java.io.*;
 import java.net.*;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,6 +12,7 @@ public class App {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
     private static final int borderNum = 75;
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
     
     private static ServerSocket servSock;
     private static final int PORT = 1234;
@@ -100,11 +102,11 @@ public class App {
         try {
             String[] arguments = description.split(" ");
             String name = arguments[0];
-            String roomCode = arguments[1];
-            String moduleName = arguments[2];
+            String moduleName = arguments[1];
+            String roomCode = arguments[2];
             int day = Integer.parseInt(arguments[3]);
-            LocalTime startTime = LocalTime.parse(arguments[4]);
-            LocalTime endTime = LocalTime.parse(arguments[5]);
+            LocalTime startTime = LocalTime.parse(arguments[4], formatter);
+            LocalTime endTime = LocalTime.parse(arguments[5], formatter);
             
             if (!courseSchedules.containsKey(name)) {
                 courseSchedules.put(name, new Schedule());
@@ -122,21 +124,19 @@ public class App {
                 for (int i=0; i<curSchedule.getNumberOfTimesScheduled(); i++) {
                     if (
                             curSchedule.checkForClashWithIndividualClass(
-                                    startTime, endTime, curSchedule.getStartTimes().get(i), curSchedule.getEndTimes().get(i)
+                                    startTime, curSchedule.getStartTimes().get(i), endTime, curSchedule.getEndTimes().get(i)
                             ) &&
                             roomCode.equals(curSchedule.getRoomCodes().get(i))
                     ) {
-                        throw new IncorrectActionException("Class clashes with other booking.");
+                        throw new IncorrectActionException("Class clashes with booking in other course.");
                     }
                 }
             }
             
             // Try add course to schedule
             if (!courseSchedule.addClassToSchedule(roomCode, moduleName, day, startTime, endTime)) {
-                throw new IncorrectActionException("Class clashes with other booking.");
+                throw new IncorrectActionException("Class clashes with booking in same course.");
             }
-            
-            
             
             output.println("Added successfully.");
         }
@@ -158,19 +158,19 @@ public class App {
             
             String[] arguments = description.split(" ");
             String name = arguments[0];
-            String roomCode = arguments[1];
-            String moduleName = arguments[2];
+            String moduleName = arguments[1];
+            String roomCode = arguments[2];
             int day = Integer.parseInt(arguments[3]);
             LocalTime startTime = LocalTime.parse(arguments[4]);
             LocalTime endTime = LocalTime.parse(arguments[5]);
             
             if (!courseSchedules.containsKey(name)) {
-                throw new IncorrectActionException("Course doesn't have any classes yet.");
+                throw new IncorrectActionException("Course doesn't have any classes.");
             }
             
             Schedule courseSchedule = courseSchedules.get(name);
             if (!courseSchedule.removeClassFromSchedule(roomCode, moduleName, day, startTime, endTime)) {
-                throw new IncorrectActionException("No class to remove from specified course.");
+                throw new IncorrectActionException("Specificed class doesn't exist in course schedule.");
             }
             
             output.printf("Room %s is now free at %s until %s.\n", roomCode, startTime, endTime);
@@ -192,19 +192,19 @@ public class App {
             }
             
             String[] arguments = description.split(" ");           
-            if (!courseSchedules.containsKey(arguments[0])) {
-                throw new IncorrectActionException("Course schedule doesn't exist yet.");
+            if (!courseSchedules.containsKey(arguments[0]) || courseSchedules.get(arguments[0]).getNumberOfTimesScheduled() == 0) {
+                throw new IncorrectActionException("Course schedule doesn't exist.");
             }
 
             Schedule cur = courseSchedules.get(arguments[0]); 
             ArrayList<String> moduleNames = cur.getModuleNames();
-            ArrayList<String> roomCodes = cur.getModuleNames();
+            ArrayList<String> roomCodes = cur.getRoomCodes();
             ArrayList<Integer> days = cur.getDays();
             ArrayList<LocalTime> startTimes = cur.getStartTimes();
             ArrayList<LocalTime> endTimes = cur.getEndTimes();
 
             for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
-                System.out.printf("%s, %s, %s: %s -> %s\n", moduleNames.get(i), roomCodes.get(i), dayNames[days.get(i)], startTimes.get(i), endTimes.get(i));
+                System.out.printf("%s-%s-%s: %s -> %s\n", roomCodes.get(i), moduleNames.get(i), dayNames[days.get(i)], startTimes.get(i), endTimes.get(i));
             }
             System.out.println("-".repeat((int)(borderNum)));
             output.println("Displaying in server console.");
