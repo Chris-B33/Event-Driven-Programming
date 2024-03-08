@@ -196,14 +196,29 @@ public class App {
 
             Schedule cur = courseSchedules.get(arguments[0]); 
             ArrayList<Booking> bookings = cur.getBookings();
-
+            
+            int j = -1;
             for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
-                System.out.printf("%s-%s-%s: %s -> %s\n", 
-                        bookings.get(i).roomCode, 
-                        bookings.get(i).moduleName, 
-                        dayNames[bookings.get(i).day], 
-                        bookings.get(i).start, 
-                        bookings.get(i).end
+                int d = bookings.get(i).day;
+                if (j != d) {
+                    String dayName = dayNames[d];
+                    System.out.printf(" %s %s %s \n", 
+                            "-".repeat(borderNum / 4 - dayName.length() / 4), 
+                            dayName, 
+                            "-".repeat(borderNum / 4 - dayName.length() / 4)
+                    );
+                    j = d;
+                }
+                
+                String mn = bookings.get(i).moduleName;
+                String rc = bookings.get(i).roomCode;
+                String st = bookings.get(i).start.toString();
+                String et = bookings.get(i).end.toString();
+                System.out.printf("| %s | %s-%s | %s |\n", 
+                        " ".repeat(borderNum / 12 - mn.length() / 2) + mn + " ".repeat(borderNum / 12 - mn.length() / 2), 
+                        " ".repeat(borderNum / 12 - st.length() / 2 - et.length() / 2 - 1) + st, 
+                        et + " ".repeat(borderNum / 12 - st.length() / 2 - et.length() / 2),
+                        " ".repeat(borderNum / 12 - rc.length() / 2) + rc + " ".repeat(borderNum / 12 - rc.length() / 2)
                 );
             }
             System.out.println("-".repeat(borderNum));

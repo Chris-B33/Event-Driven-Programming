@@ -1,18 +1,18 @@
 Test Classes
-add, LM121 CS4115 S206 1 09:00 10:00
-add, LM121 CS4117 S206 2 11:00 12:00
-add, LM121 CS4116 S206 1 11:00 12:00
-add, LM121 CS4118 S206 4 09:30 10:30
-add, LM121 CS4119 S206 3 09:30 10:30
-add, LM121 CS4115 S206 5 09:00 10:00
+add, LM121 CS4115 FG042 1 09:00 10:00
+add, LM121 CS4117 S207 2 11:00 12:00
+add, LM121 CS4815 S206 1 11:00 12:00
+add, LM121 ME4006 S105 4 09:30 10:30
+add, LM121 CS4119 CSG001 3 09:30 10:30
+add, LM121 ME4006 S206 5 09:00 10:00
 display, LM121 --> Should be sorted
-remove, LM121 CS4115 S206 5 09:00 10:00
+remove, LM121 ME4006 S105 4 09:30 10:30
 display, LM121
 
 Add Test Cases
-add, LM121 CS4120 S206 4 09:30 10:30 --> Too many modules
-add, LM122 CS4115 S206 1 09:00 10:00 --> Conflicted time in other course
-add, LM121 CS4115 S206 1 09:30 12:30 --> Conflicted time in same course
+add, LM121 CS8000 S206 4 12:30 13:30 --> Too many modules
+add, LM122 CS4117 S208 1 09:00 10:00 --> Conflicted time in other course
+add, LM121 CS4115 S207 1 09:30 12:30 --> Conflicted time in same course
 
 
 Remove Test Cases
