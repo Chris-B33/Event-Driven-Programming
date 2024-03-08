@@ -6,6 +6,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class App {
     private static final String[] dayNames = {
@@ -113,6 +115,12 @@ public class App {
             }
             
             Schedule courseSchedule = courseSchedules.get(name);
+            
+            HashSet<String> uniqueModules = courseSchedule.getUniqueModuleNames();
+            if (uniqueModules.size() == 5 && !uniqueModules.contains(moduleName)) {
+               throw new IncorrectActionException("Course already has 5 modules.");
+            }
+           
             
             // Check for clashes in other schedules
             for (String scheduleName : courseSchedules.keySet()) {

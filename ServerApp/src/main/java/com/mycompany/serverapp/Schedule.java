@@ -2,6 +2,7 @@ package com.mycompany.serverapp;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /*
     Schedule for each course
@@ -43,6 +44,10 @@ public class Schedule {
     
     public int getNumberOfTimesScheduled() {
         return this.startTimes.size();
+    }
+    
+    public HashSet<String> getUniqueModuleNames() {
+        return new HashSet<>(moduleNames);
     }
     
     public boolean checkForClashWithIndividualClass(LocalTime start1, LocalTime start2, LocalTime end1, LocalTime end2) {
