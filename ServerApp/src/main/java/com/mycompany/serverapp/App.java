@@ -159,11 +159,7 @@ public class App {
       removeFromSchedule Method
     */
     private static void removeFromSchedule() {
-        try {
-            if (courseSchedules == null) {
-                throw new IncorrectActionException("No schedules exist.");
-            }
-            
+        try {           
             String[] arguments = description.split(" ");
             String name = arguments[0];
             String moduleName = arguments[1];
@@ -194,14 +190,10 @@ public class App {
       displaySchedule Method
     */
     private static void displaySchedule() {
-        try {
-            if (courseSchedules == null) {
-                throw new IncorrectActionException("No schedules exist.");
-            }
-            
+        try {            
             String[] arguments = description.split(" ");           
             if (!courseSchedules.containsKey(arguments[0]) || courseSchedules.get(arguments[0]).getNumberOfTimesScheduled() == 0) {
-                throw new IncorrectActionException("Course schedule doesn't exist.");
+                throw new IncorrectActionException("Course schedule is null or doesn't exist.");
             }
 
             Schedule cur = courseSchedules.get(arguments[0]); 
