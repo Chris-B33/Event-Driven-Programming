@@ -16,4 +16,16 @@ public class Booking {
         this.start = _start;
         this.end = _end;
     }
+    
+    public int getDay() {
+        return this.day;
+    }
+    
+    public LocalTime getStart() {
+        return this.start;
+    }
+    
+    public LocalTime getEnd() {
+        return this.end;
+    }
 }

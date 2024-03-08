@@ -2,6 +2,8 @@ package com.mycompany.serverapp;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /*
     Schedule for each course
@@ -29,11 +31,11 @@ public class Schedule {
             }
         }
         return uniqueModules;
-    }
+    } 
     
     public boolean checkForClashWithIndividualClass(LocalTime start1, LocalTime start2, LocalTime end1, LocalTime end2) {
-            return ((start1.compareTo(start2) >= 0 && start1.compareTo(end2) <= 0) ||
-                    (end1.compareTo(start2) >= 0 && end1.compareTo(end2) <= 0));
+            return ((start1.compareTo(start2) >= 0 && start1.compareTo(end2) < 0) ||
+                    (end1.compareTo(start2) > 0 && end1.compareTo(end2) <= 0));
     }
    
     public boolean checkForClashInSchedule(String roomCode, int day, LocalTime start, LocalTime end) {
@@ -55,6 +57,7 @@ public class Schedule {
         }
         
         bookings.add(new Booking(roomCode, moduleName, day, start, end));
+        this.sortBookings();
         return true;
     }
     
@@ -73,5 +76,12 @@ public class Schedule {
             }
         }        
         return false;
+    }
+    
+    public void sortBookings() {
+        Collections.sort(this.bookings, Comparator.comparing(Booking::getDay)
+            .thenComparing(Booking::getStart)
+            .thenComparing(Booking::getEnd)
+        );
     }
 }

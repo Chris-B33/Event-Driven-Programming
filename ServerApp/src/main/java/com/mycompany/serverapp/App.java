@@ -148,7 +148,7 @@ public class App {
         }
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);
-            System.out.println("-".repeat((int)(borderNum)));
+            System.out.println("-".repeat(borderNum));
             output.println(e.getMessage());
         }
     }
@@ -179,7 +179,7 @@ public class App {
         }
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);
-            System.out.println("-".repeat((int)(borderNum)));
+            System.out.println("-".repeat(borderNum));
             output.println(e.getMessage());
         }
     }
@@ -206,12 +206,12 @@ public class App {
                         bookings.get(i).end
                 );
             }
-            System.out.println("-".repeat((int)(borderNum)));
+            System.out.println("-".repeat(borderNum));
             output.println("Displaying in server console.");
         } 
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);
-            System.out.println("-".repeat((int)(borderNum)));
+            System.out.println("-".repeat(borderNum));
             output.println(e.getMessage());
         }
     }
