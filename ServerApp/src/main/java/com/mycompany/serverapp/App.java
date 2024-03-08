@@ -3,18 +3,14 @@ package com.mycompany.serverapp;
 import java.io.*;
 import java.net.*;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 
 public class App {
     private static final String[] dayNames = {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
-    private static final int borderNum = 75;
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    private static final int borderNum = 100;
     
     private static ServerSocket servSock;
     private static final int PORT = 1234;
@@ -107,8 +103,8 @@ public class App {
             String moduleName = arguments[1];
             String roomCode = arguments[2];
             int day = Integer.parseInt(arguments[3]);
-            LocalTime startTime = LocalTime.parse(arguments[4], formatter);
-            LocalTime endTime = LocalTime.parse(arguments[5], formatter);
+            LocalTime startTime = LocalTime.parse(arguments[4]);
+            LocalTime endTime = LocalTime.parse(arguments[5]);
             
             if (!courseSchedules.containsKey(name)) {
                 courseSchedules.put(name, new Schedule());
@@ -116,7 +112,7 @@ public class App {
             
             Schedule courseSchedule = courseSchedules.get(name);
             
-            HashSet<String> uniqueModules = courseSchedule.getUniqueModuleNames();
+            ArrayList<String> uniqueModules = courseSchedule.getUniqueModuleNames();
             if (uniqueModules.size() == 5 && !uniqueModules.contains(moduleName)) {
                throw new IncorrectActionException("Course already has 5 modules.");
             }
@@ -125,6 +121,8 @@ public class App {
             // Check for clashes in other schedules
             for (String scheduleName : courseSchedules.keySet()) {
                 Schedule curSchedule = courseSchedules.get(scheduleName);
+                ArrayList<Booking> curBookings = curSchedule.getBookings();
+                        
                 if (name.equals(scheduleName)) {
                     continue;
                 }
@@ -132,9 +130,9 @@ public class App {
                 for (int i=0; i<curSchedule.getNumberOfTimesScheduled(); i++) {
                     if (
                             curSchedule.checkForClashWithIndividualClass(
-                                    startTime, curSchedule.getStartTimes().get(i), endTime, curSchedule.getEndTimes().get(i)
+                                    startTime, curBookings.get(i).start, endTime, curBookings.get(i).end
                             ) &&
-                            roomCode.equals(curSchedule.getRoomCodes().get(i))
+                            roomCode.equals(curBookings.get(i).roomCode)
                     ) {
                         throw new IncorrectActionException("Class clashes with booking in other course.");
                     }
@@ -197,14 +195,16 @@ public class App {
             }
 
             Schedule cur = courseSchedules.get(arguments[0]); 
-            ArrayList<String> moduleNames = cur.getModuleNames();
-            ArrayList<String> roomCodes = cur.getRoomCodes();
-            ArrayList<Integer> days = cur.getDays();
-            ArrayList<LocalTime> startTimes = cur.getStartTimes();
-            ArrayList<LocalTime> endTimes = cur.getEndTimes();
+            ArrayList<Booking> bookings = cur.getBookings();
 
             for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
-                System.out.printf("%s-%s-%s: %s -> %s\n", roomCodes.get(i), moduleNames.get(i), dayNames[days.get(i)], startTimes.get(i), endTimes.get(i));
+                System.out.printf("%s-%s-%s: %s -> %s\n", 
+                        bookings.get(i).roomCode, 
+                        bookings.get(i).moduleName, 
+                        dayNames[bookings.get(i).day], 
+                        bookings.get(i).start, 
+                        bookings.get(i).end
+                );
             }
             System.out.println("-".repeat((int)(borderNum)));
             output.println("Displaying in server console.");
