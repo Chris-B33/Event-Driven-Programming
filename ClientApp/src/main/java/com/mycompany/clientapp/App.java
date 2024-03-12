@@ -20,7 +20,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
@@ -52,8 +51,8 @@ public class App extends Application {
     TextField room;
     MenuButton day;
     int dayNum;
-    MenuButton startTime;
-    MenuButton endTime;
+    TimePicker startTime;
+    TimePicker endTime;
     LocalTime start;
     LocalTime end;
     VBox box;
@@ -78,11 +77,8 @@ public class App extends Application {
         day = new MenuButton("Select Day");
         days(day);
         
-        startTime = new MenuButton("Select Start Time");
-        times(startTime, start);
-        
-        endTime = new MenuButton("Select End Time");
-        times(endTime, end);
+        startTime = new TimePicker();
+        endTime = new TimePicker();
         
         powerButton.setPrefWidth(150);
         powerButton.setPrefHeight(50);
@@ -247,58 +243,6 @@ public class App extends Application {
             dayNum = 6;
         }else if(d.getText().equals(m7.getText())){
             dayNum = 7;
-        }
-    }
-
-    public void times(MenuButton t, LocalTime e){
-        MenuItem t1 = new MenuItem("09:00");
-        MenuItem t2 = new MenuItem("10:00");
-        MenuItem t3 = new MenuItem("11:00");
-        MenuItem t4 = new MenuItem("12:00");
-        MenuItem t5 = new MenuItem("13:00");
-        MenuItem t6 = new MenuItem("14:00");
-        MenuItem t7 = new MenuItem("15:00");
-        MenuItem t8 = new MenuItem("16:00");
-        MenuItem t9 = new MenuItem("17:00");
-        MenuItem t10 = new MenuItem("18:00");
-
-        t.getItems().addAll(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
-
-        EventHandler<ActionEvent> pickTime = (ActionEvent s) -> {
-            t.setText(((MenuItem)s.getSource()).getText());
-        };
-            
-        t1.setOnAction(pickTime);
-        t2.setOnAction(pickTime);
-        t3.setOnAction(pickTime);
-        t4.setOnAction(pickTime);
-        t5.setOnAction(pickTime);
-        t6.setOnAction(pickTime);
-        t7.setOnAction(pickTime);
-        t8.setOnAction(pickTime);
-        t9.setOnAction(pickTime);
-        t10.setOnAction(pickTime);
-        
-        if(t.getText().equals(t1.getText())){
-            e = LocalTime.parse("09:00");
-        }else if(t.getText().equals(t2.getText())){
-            e = LocalTime.parse("10:00");
-        }else if(t.getText().equals(t3.getText())){
-            e = LocalTime.parse("11:00");
-        }else if(t.getText().equals(t4.getText())){
-            e = LocalTime.parse("12:00");
-        }else if(t.getText().equals(t5.getText())){
-            e = LocalTime.parse("13:00");
-        }else if(t.getText().equals(t6.getText())){
-            e = LocalTime.parse("14:00");
-        }else if(t.getText().equals(t7.getText())){
-            e = LocalTime.parse("15:00");
-        }else if(t.getText().equals(t8.getText())){
-            e = LocalTime.parse("16:00");
-        }else if(t.getText().equals(t9.getText())){
-            e = LocalTime.parse("17:00");
-        }else if(t.getText().equals(t10.getText())){
-            e = LocalTime.parse("18:00");
         }
     }
 
