@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
@@ -26,6 +28,10 @@ import javafx.scene.layout.VBox;
  * JavaFX App
  */
 public class App extends Application {
+    private static final ArrayList dayNames = new ArrayList<>(
+        Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    );
+    
     static InetAddress host;
     static final int PORT = 1234;
 
@@ -53,12 +59,11 @@ public class App extends Application {
     int dayNum;
     TimePicker startTime;
     TimePicker endTime;
-    LocalTime start;
-    LocalTime end;
     VBox box;
+    
 
     @Override
-    public void start(Stage stage) throws IOException {       
+    public void start(Stage stage) throws IOException {     
         responseLabel = new Label("Server Response: ");
         sendButton = new Button("Confirm");
 
@@ -74,11 +79,11 @@ public class App extends Application {
         room = new TextField("");
         roomLabel = new Label("Room code:");
         
-        day = new MenuButton("Select Day");
+        day = new MenuButton("Monday");
         days(day);
         
-        startTime = new TimePicker();
-        endTime = new TimePicker();
+        startTime = new TimePicker(9, 0, "Start");
+        endTime = new TimePicker(10, 0, "End");
         
         powerButton.setPrefWidth(150);
         powerButton.setPrefHeight(50);
@@ -120,13 +125,13 @@ public class App extends Application {
         displayButton.setOnAction((ActionEvent d) -> {
                     if(displayButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(displayButton);
-                        box.getChildren().addAll(courseLabel, course, modLabel, module,sendButton);
+                        box.getChildren().addAll(courseLabel, course, sendButton);
                         box.getChildren().removeAll(addButton, removeButton, powerButton);
                         action = "DISPLAY";
                     }else{
                         style(displayButton);
                         box.getChildren().addAll(addButton, removeButton, powerButton);
-                        box.getChildren().removeAll(courseLabel, course, modLabel, module, sendButton);
+                        box.getChildren().removeAll(courseLabel, course, sendButton);
                         action = "";
                     }
             });
@@ -137,9 +142,6 @@ public class App extends Application {
                         box.getChildren().add(sendButton);
                         box.getChildren().removeAll(addButton, removeButton,displayButton);
                         action = "STOP";
-
-                        // COURSE (str) MODULE (str) ROOM (str) DAY (int) TIME1 (LocalTime) TIME2 (LocalTime)  
-                        description = "";
                     }else{
                         powerButton.setStyle("-fx-background-color: red; -fx-background-radius: 30; -fx-background-insets: 0; -fx-text-fill: White");
                         box.getChildren().addAll(addButton, removeButton, displayButton);
@@ -167,6 +169,10 @@ public class App extends Application {
                         output = new PrintWriter(link.getOutputStream(), true);
 
                         // Message
+                        description = String.format("%s %s %s %s %s %s", 
+                                course.getText(), module.getText(), room.getText(), dayNum, startTime.getTime(), endTime.getTime()
+                        );
+                        
                         output.println(action);
                         output.println(description);
 
@@ -187,7 +193,6 @@ public class App extends Application {
                     }
             });
            
-        description = course.getText() + " " + room.getText() + " " + module.getText() + " " + dayNum + " " + start + " " + end; 
         box = new VBox(5, responseLabel, addButton, removeButton, displayButton, powerButton);
         box.setAlignment(Pos.CENTER);
         scene = new Scene(box, 640, 480);
@@ -219,6 +224,7 @@ public class App extends Application {
 
         EventHandler<ActionEvent> pickDay = (ActionEvent day1) -> {
             d.setText(((MenuItem) day1.getSource()).getText());
+            dayNum = dayNames.indexOf(d.getText());
         };
 
         m1.setOnAction(pickDay);
@@ -228,22 +234,6 @@ public class App extends Application {
         m5.setOnAction(pickDay);
         m6.setOnAction(pickDay);
         m7.setOnAction(pickDay);
-
-        if(d.getText().equals(m1.getText())){
-            dayNum = 1;
-        }else if(d.getText().equals(m2.getText())){
-            dayNum = 2;
-        }else if(d.getText().equals(m3.getText())){
-            dayNum = 3;
-        }else if(d.getText().equals(m4.getText())){
-            dayNum = 4;
-        }else if(d.getText().equals(m5.getText())){
-            dayNum = 5;
-        }else if(d.getText().equals(m6.getText())){
-            dayNum = 6;
-        }else if(d.getText().equals(m7.getText())){
-            dayNum = 7;
-        }
     }
 
     public static void main(String[] args) {

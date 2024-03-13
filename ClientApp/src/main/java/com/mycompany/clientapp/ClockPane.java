@@ -10,9 +10,8 @@ class ClockPane extends Pane {
         private int hour;
         private int minute;
 
-        private double w = 250, h = 250;
+        private double w = 350, h = 350;
 
-        private int sleepTime = 50;
         public ClockPane() {
             this.hour = 9;
             this.minute = 0;

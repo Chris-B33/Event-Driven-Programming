@@ -1,5 +1,8 @@
 package com.mycompany.clientapp;
 
+import java.time.LocalTime;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.HBox;
@@ -8,6 +11,7 @@ import javafx.scene.layout.VBox;
 public class TimePicker extends VBox{
     int hour;
     int minute;
+    String title;
     
     HBox time;
     Spinner <Integer> hourSpinner;
@@ -17,12 +21,13 @@ public class TimePicker extends VBox{
     ClockPane clock;
     
     TimePicker() {
-        this(9, 0);
+        this(9, 0, "Time");
     }
     
-    TimePicker(int _hour, int _minute) {
+    TimePicker(int _hour, int _minute, String _title) {
         this.hour = _hour;
         this.minute = _minute;
+        this.title = _title;
         
         clock = new ClockPane();
         hourSpinner = new Spinner<>();
@@ -59,7 +64,11 @@ public class TimePicker extends VBox{
             clock.setH(this.getHeight());
         });
         
-        time = new HBox(2, hourSpinner, minuteSpinner);
-        this.getChildren().addAll(clock, time);
+        time = new HBox(3, new Label(title + ": "), hourSpinner, minuteSpinner);
+        this.getChildren().addAll(time, clock);
+    }
+    
+    public String getTime() {
+        return hour + ":" + minute;
     }
 }

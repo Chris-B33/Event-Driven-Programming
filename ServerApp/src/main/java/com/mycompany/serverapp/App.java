@@ -3,6 +3,7 @@ package com.mycompany.serverapp;
 import java.io.*;
 import java.net.*;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -103,8 +104,8 @@ public class App {
             String moduleName = arguments[1];
             String roomCode = arguments[2];
             int day = Integer.parseInt(arguments[3]);
-            LocalTime startTime = LocalTime.parse(arguments[4]);
-            LocalTime endTime = LocalTime.parse(arguments[5]);
+            LocalTime startTime = LocalTime.parse(arguments[4], DateTimeFormatter.ofPattern("H:m"));
+            LocalTime endTime = LocalTime.parse(arguments[5], DateTimeFormatter.ofPattern("H:m"));
             
             if (!courseSchedules.containsKey(name)) {
                 courseSchedules.put(name, new Schedule());
@@ -163,8 +164,8 @@ public class App {
             String moduleName = arguments[1];
             String roomCode = arguments[2];
             int day = Integer.parseInt(arguments[3]);
-            LocalTime startTime = LocalTime.parse(arguments[4]);
-            LocalTime endTime = LocalTime.parse(arguments[5]);
+            LocalTime startTime = LocalTime.parse(arguments[4], DateTimeFormatter.ofPattern("H:m"));
+            LocalTime endTime = LocalTime.parse(arguments[5], DateTimeFormatter.ofPattern("H:m"));
             
             if (!courseSchedules.containsKey(name)) {
                 throw new IncorrectActionException("Course doesn't have any classes.");
@@ -203,9 +204,9 @@ public class App {
                 if (j != d) {
                     String dayName = dayNames[d];
                     System.out.printf(" %s %s %s \n", 
-                            "-".repeat(borderNum / 4 - dayName.length() / 4), 
+                            "-".repeat(borderNum / 4 - dayName.length() / 4 + 1), 
                             dayName, 
-                            "-".repeat(borderNum / 4 - dayName.length() / 4)
+                            "-".repeat(borderNum / 4 - dayName.length() / 4 + 1)
                     );
                     j = d;
                 }
