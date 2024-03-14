@@ -1,2 +1,4 @@
+ClockPane.class
 module-info.class
-com\mycompany\clientapp\App.class
+App.class
+TimePicker.class

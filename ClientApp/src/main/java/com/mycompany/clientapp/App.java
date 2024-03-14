@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 import javafx.scene.control.MenuButton;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
-import java.time.LocalTime;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -23,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 
 /**
  * JavaFX App
@@ -60,6 +60,7 @@ public class App extends Application {
     TimePicker startTime;
     TimePicker endTime;
     VBox box;
+    HBox times;
     
 
     @Override
@@ -84,6 +85,7 @@ public class App extends Application {
         
         startTime = new TimePicker(9, 0, "Start");
         endTime = new TimePicker(10, 0, "End");
+        times = new HBox(100, startTime, endTime);
         
         powerButton.setPrefWidth(150);
         powerButton.setPrefHeight(50);
@@ -97,13 +99,13 @@ public class App extends Application {
         addButton.setOnAction((ActionEvent a) -> {
                     if(addButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(addButton);
-                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
+                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         box.getChildren().removeAll(removeButton,displayButton, powerButton);
                         action = "ADD";
                     }else{
                         style(addButton);
                         box.getChildren().addAll(removeButton, displayButton, powerButton);
-                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
+                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         action = "";
                     }
             });
@@ -111,13 +113,13 @@ public class App extends Application {
         removeButton.setOnAction((ActionEvent r) -> {
                     if(removeButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(removeButton);
-                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
+                        box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         box.getChildren().removeAll(addButton,displayButton, powerButton);
                         action = "REMOVE";
                     }else{
                         style(removeButton);
                         box.getChildren().addAll(addButton, displayButton, powerButton);
-                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, startTime, endTime, sendButton);
+                        box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         action = "";
                     }
             });
