@@ -31,7 +31,8 @@ public class App extends Application {
     private static final ArrayList dayNames = new ArrayList<>(
         Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     );
-    
+
+    static Socket link;
     static InetAddress host;
     static final int PORT = 1234;
 
@@ -40,11 +41,11 @@ public class App extends Application {
 
     private static String action;
     private static String description;
+    private static String response;
 
     static Scene scene;
     Label responseLabel;
     Button sendButton;
-
     Button addButton;
     Button removeButton;
     Button displayButton;
@@ -64,7 +65,19 @@ public class App extends Application {
     
 
     @Override
-    public void start(Stage stage) throws IOException {     
+    public void start(Stage stage) throws IOException {   
+        try {
+            host = InetAddress.getLocalHost();
+        } catch(UnknownHostException e) 
+        {
+            System.out.println("Host ID not found!");
+            System.exit(1);
+        }
+        
+        link = new Socket(host,PORT);
+        input = new BufferedReader(new InputStreamReader(link.getInputStream()));
+        output = new PrintWriter(link.getOutputStream(), true);
+        
         responseLabel = new Label("Server Response: ");
         sendButton = new Button("Confirm");
 
@@ -153,47 +166,26 @@ public class App extends Application {
             });
 
         sendButton.setOnAction((ActionEvent t) -> {
-                    try
-                    {
-                        host = InetAddress.getLocalHost();
-                    }
-                    catch(UnknownHostException e) 
-                    {
-                        System.out.println("Host ID not found!");
-                        System.exit(1);
-                    }
+            try
+            {
+                // Message
+                description = String.format("%s %s %s %s %s %s", 
+                        course.getText(), module.getText(), room.getText(), dayNum, startTime.getTime(), endTime.getTime()
+                );
 
-                    Socket link;
-                    try
-                    {
-                        link = new Socket(host,PORT);
-                        input = new BufferedReader(new InputStreamReader(link.getInputStream()));
-                        output = new PrintWriter(link.getOutputStream(), true);
+                output.println(action);
+                output.println(description);
 
-                        // Message
-                        description = String.format("%s %s %s %s %s %s", 
-                                course.getText(), module.getText(), room.getText(), dayNum, startTime.getTime(), endTime.getTime()
-                        );
-                        
-                        output.println(action);
-                        output.println(description);
+                // Response
+                response = input.readLine();
+                responseLabel.setText("Server Response: " + response);
 
-                        // Response
-                        String response;
-                        response = input.readLine();
-                        responseLabel.setText("Server Response: " + response);
-
-                        // Handling Responses
-
-                        if (response.equals("TERMINATE")) {
-                            System.exit(0);
-                        }
-                    }
-                    catch(IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-            });
+                // Handling Responsesif (response.split(" ")[0].equals("DISPLAY")) { fancyTimetable(); }
+                if (response.equals("TERMINATE")) { System.exit(0); }
+                if (response.split(" ")[0].equals("DISPLAY")) { fancyTimetable(); }
+            }
+            catch(IOException e) {}
+        });
            
         box = new VBox(5, responseLabel, addButton, removeButton, displayButton, powerButton);
         box.setAlignment(Pos.CENTER);
@@ -236,6 +228,17 @@ public class App extends Application {
         m5.setOnAction(pickDay);
         m6.setOnAction(pickDay);
         m7.setOnAction(pickDay);
+    }
+    
+    private void fancyTimetable() {
+        String[] conkedTimetable = response.split(" ");
+        for (int i=1; i<conkedTimetable.length; i += 4) {
+            
+            String module = conkedTimetable[i];
+            String room = conkedTimetable[i+1];
+            String start = conkedTimetable[i+2];
+            String end = conkedTimetable[i+3];
+        }
     }
 
     public static void main(String[] args) {
