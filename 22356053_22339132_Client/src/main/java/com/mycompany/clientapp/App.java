@@ -21,8 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 
 /**
  * JavaFX App
@@ -31,10 +30,10 @@ public class App extends Application {
     private static final ArrayList dayNames = new ArrayList<>(
         Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     );
-
-    static Socket link;
+    
     static InetAddress host;
     static final int PORT = 1234;
+    static Socket link;
 
     private static BufferedReader input;
     private static PrintWriter output;
@@ -46,10 +45,15 @@ public class App extends Application {
     static Scene scene;
     Label responseLabel;
     Button sendButton;
+
     Button addButton;
+    Button earlyButton;
     Button removeButton;
     Button displayButton;
     Button powerButton;
+    Button incorrectActionButton;
+    TextField actionText;
+    Label actionLabel;
     Label courseLabel;
     TextField course;
     Label modLabel;
@@ -62,18 +66,18 @@ public class App extends Application {
     TimePicker endTime;
     VBox box;
     HBox times;
-    
+    VBox pane;
 
     @Override
-    public void start(Stage stage) throws IOException {   
-        try {
+    public void start(Stage stage) throws IOException { 
+         try {
             host = InetAddress.getLocalHost();
         } catch(UnknownHostException e) 
         {
             System.out.println("Host ID not found!");
             System.exit(1);
         }
-        
+
         link = new Socket(host,PORT);
         input = new BufferedReader(new InputStreamReader(link.getInputStream()));
         output = new PrintWriter(link.getOutputStream(), true);
@@ -84,6 +88,8 @@ public class App extends Application {
         addButton = new Button("Add");
         removeButton = new Button("Remove");
         displayButton = new Button("Display Schedule");
+        earlyButton = new Button("Early Lectures");
+        incorrectActionButton = new Button("Other");
         powerButton = new Button("Quit");
 
         course = new TextField("");
@@ -92,6 +98,11 @@ public class App extends Application {
         modLabel = new Label("Module:");
         room = new TextField("");
         roomLabel = new Label("Room code:");
+        actionLabel = new Label("Enter action:");
+        actionText = new TextField("");
+        
+        pane = new VBox(0);
+        pane.setStyle("-fx-border-color: black");
         
         day = new MenuButton("Monday");
         days(day);
@@ -107,17 +118,19 @@ public class App extends Application {
         style(addButton);
         style(removeButton);
         style(displayButton);
+        style(incorrectActionButton);
+        style(earlyButton);
         powerButton.setStyle("-fx-background-color: red; -fx-background-radius: 30; -fx-background-insets: 0; -fx-text-fill: White");
 
         addButton.setOnAction((ActionEvent a) -> {
                     if(addButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(addButton);
                         box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
-                        box.getChildren().removeAll(removeButton,displayButton, powerButton);
+                        box.getChildren().removeAll(removeButton,displayButton, earlyButton, incorrectActionButton, powerButton);
                         action = "ADD";
                     }else{
                         style(addButton);
-                        box.getChildren().addAll(removeButton, displayButton, powerButton);
+                        box.getChildren().addAll(removeButton, displayButton, earlyButton, incorrectActionButton, powerButton);
                         box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         action = "";
                     }
@@ -127,11 +140,11 @@ public class App extends Application {
                     if(removeButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(removeButton);
                         box.getChildren().addAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
-                        box.getChildren().removeAll(addButton,displayButton, powerButton);
+                        box.getChildren().removeAll(addButton,displayButton, earlyButton, incorrectActionButton, powerButton);
                         action = "REMOVE";
                     }else{
                         style(removeButton);
-                        box.getChildren().addAll(addButton, displayButton, powerButton);
+                        box.getChildren().addAll(addButton, displayButton, earlyButton, incorrectActionButton, powerButton);
                         box.getChildren().removeAll(courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         action = "";
                     }
@@ -141,12 +154,44 @@ public class App extends Application {
                     if(displayButton.getStyle().contains("-fx-background-color: lightblue")){
                         style(displayButton);
                         box.getChildren().addAll(courseLabel, course, sendButton);
-                        box.getChildren().removeAll(addButton, removeButton, powerButton);
+                        box.getChildren().removeAll(addButton, removeButton, earlyButton, incorrectActionButton, powerButton);
                         action = "DISPLAY";
                     }else{
                         style(displayButton);
-                        box.getChildren().addAll(addButton, removeButton, powerButton);
+                        box.getChildren().addAll(addButton, removeButton, earlyButton, incorrectActionButton, powerButton);
+                        if(box.getChildren().contains(pane)){
+                            box.getChildren().removeAll(courseLabel, course, pane, sendButton);
+                        } else{
+                            box.getChildren().removeAll(courseLabel, course, sendButton);
+                        }
+                        action = "";
+                    }
+            });
+            
+        earlyButton.setOnAction((ActionEvent e) -> {
+                    if(earlyButton.getStyle().contains("-fx-background-color: lightblue")){
+                        style(earlyButton);
+                        box.getChildren().addAll(courseLabel, course, sendButton);
+                        box.getChildren().removeAll(addButton, removeButton,displayButton, incorrectActionButton, powerButton);
+                        action = "EARLY";
+                    }else{
+                        style(earlyButton);
+                        box.getChildren().addAll(addButton, removeButton, displayButton, incorrectActionButton, powerButton);
                         box.getChildren().removeAll(courseLabel, course, sendButton);
+                        action = "";
+                    }
+            });
+            
+        incorrectActionButton.setOnAction((ActionEvent a) -> {
+                    if(incorrectActionButton.getStyle().contains("-fx-background-color: lightblue")){
+                        style(incorrectActionButton);
+                        box.getChildren().addAll(actionLabel, actionText, courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
+                        box.getChildren().removeAll(addButton, removeButton, displayButton, earlyButton, powerButton);
+                        action = actionText.getText();
+                    }else{
+                        style(incorrectActionButton);
+                        box.getChildren().addAll(addButton, removeButton, displayButton, earlyButton, powerButton);
+                        box.getChildren().removeAll(actionLabel, actionText, courseLabel, course, modLabel, module, roomLabel, room, day, times, sendButton);
                         action = "";
                     }
             });
@@ -155,11 +200,11 @@ public class App extends Application {
                     if(powerButton.getStyle().contains("-fx-background-color: red")){
                         powerButton.setStyle("-fx-background-color: darkred; -fx-background-radius: 30; -fx-background-insets: 0; -fx-text-fill: White");
                         box.getChildren().add(sendButton);
-                        box.getChildren().removeAll(addButton, removeButton,displayButton);
+                        box.getChildren().removeAll(addButton, removeButton, displayButton, earlyButton, incorrectActionButton);
                         action = "STOP";
                     }else{
                         powerButton.setStyle("-fx-background-color: red; -fx-background-radius: 30; -fx-background-insets: 0; -fx-text-fill: White");
-                        box.getChildren().addAll(addButton, removeButton, displayButton);
+                        box.getChildren().addAll(addButton, removeButton, displayButton, earlyButton, incorrectActionButton);
                         box.getChildren().remove(sendButton);
                         action = "";
                     }
@@ -178,16 +223,22 @@ public class App extends Application {
 
                 // Response
                 response = input.readLine();
-                responseLabel.setText("Server Response: " + response);
 
-                // Handling Responsesif (response.split(" ")[0].equals("DISPLAY")) { fancyTimetable(); }
-                if (response.equals("TERMINATE")) { System.exit(0); }
-                if (response.split(" ")[0].equals("DISPLAY")) { fancyTimetable(); }
+                // Handling Responses
+                if (response.equals("TERMINATE")) { 
+                    System.exit(0); 
+                } 
+                else if (response.split(" ")[0].equals("DISPLAY")) { 
+                    
+                    fancyTimetable(response.split(" ")); 
+                }
+                
+                responseLabel.setText("Server Response: " + response);
             }
             catch(IOException e) {}
         });
            
-        box = new VBox(5, responseLabel, addButton, removeButton, displayButton, powerButton);
+        box = new VBox(5, responseLabel, addButton, removeButton, earlyButton, displayButton, incorrectActionButton, powerButton);
         box.setAlignment(Pos.CENTER);
         scene = new Scene(box, 640, 480);
         stage.setScene(scene);
@@ -230,15 +281,22 @@ public class App extends Application {
         m7.setOnAction(pickDay);
     }
     
-    private void fancyTimetable() {
-        String[] conkedTimetable = response.split(" ");
-        for (int i=1; i<conkedTimetable.length; i += 4) {
-            
-            String module = conkedTimetable[i];
-            String room = conkedTimetable[i+1];
-            String start = conkedTimetable[i+2];
-            String end = conkedTimetable[i+3];
+     private void fancyTimetable(String[] conkedTimetable) {
+        pane.getChildren().clear();
+        for (int i=1; i<conkedTimetable.length; i += 5) {
+            String day = conkedTimetable[i];
+            String module = conkedTimetable[i+1];
+            String room = conkedTimetable[i+2];
+            String start = conkedTimetable[i+3];
+            String end = conkedTimetable[i+4];
+
+            Timetable timetable = new Timetable(day, module, room, start, end);
+            pane.getChildren().add(timetable);
         }
+        box.getChildren().add(pane);
+
+        response = "Displaying Timetable";
+        
     }
 
     public static void main(String[] args) {

@@ -169,21 +169,16 @@ public class ClientHandler implements Runnable {
             Schedule cur = courseSchedules.get(arguments[0]); 
             ArrayList<Booking> bookings = cur.getBookings();
             
-            String outputStr = "";
+            String outputStr = "DISPLAY ";
             
             int j = -1;
-            for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {
-                int d = bookings.get(i).day;
-                if (j != d) {
-                    j = d;
-                    outputStr += dayNames[d] + " ";
-                }
-                
+            for (int i=0; i<cur.getNumberOfTimesScheduled(); i++) {  
+                String dy = dayNames[bookings.get(i).day];
                 String mn = bookings.get(i).moduleName;
                 String rc = bookings.get(i).roomCode;
                 String st = bookings.get(i).start.toString();
                 String et = bookings.get(i).end.toString();
-                outputStr += String.format("%s %s %s %s ", mn, rc, st, et);
+                outputStr += String.format("%s %s %s %s %s ", dy, mn, rc, st, et);
             }
             output.println(outputStr);
         } 
@@ -230,9 +225,8 @@ public class ClientHandler implements Runnable {
             if (earlyDays.equals("")) {
                 throw new IncorrectActionException("No days could be pushed back for early lectures.");
             }
-            else {
-                output.println(earlyDays + " were pushed back for earlier lectures.");
-            }
+            
+            output.println("( " + earlyDays + ") were pushed back.");
         }
         catch (IncorrectActionException e) {
             System.out.println("[ERROR]: " + e);

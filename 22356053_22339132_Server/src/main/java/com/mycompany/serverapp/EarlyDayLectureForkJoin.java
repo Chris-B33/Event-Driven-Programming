@@ -25,45 +25,48 @@ public class EarlyDayLectureForkJoin extends RecursiveTask<String> {
     }
     
     @Override
-    protected String compute() {
+    protected synchronized String compute() {
         Schedule courseSchedule = schedules.get(this.courseName);
-        if(end != courseSchedule.getNumberOfTimesScheduled() - 1) {
+        if(end != courseSchedule.getNumberOfTimesScheduled()) {
             ArrayList<Booking> bookings = courseSchedule.getBookings();
-            int day = bookings.get(start).getDay();
+            int day = bookings.get(this.start).getDay();
             LocalTime earliestSlot = this.getEarliestSlot(day);
             
-            long pushBack = ChronoUnit.MINUTES.between(bookings.get(0).getStart(), earliestSlot);
-            long dayLength = ChronoUnit.MINUTES.between(bookings.get(0).getStart(), bookings.get(bookings.size() - 1).getEnd());
-            if (pushBack < dayLength) {
+            long pushBack = ChronoUnit.MINUTES.between(earliestSlot, bookings.get(this.start).getStart());
+            
+            if (pushBack > 0) {
                 for (Booking bk : bookings) {
-                    bk.start.minus(pushBack, ChronoUnit.MINUTES);
-                    bk.end.minus(pushBack, ChronoUnit.MINUTES);
+                    if (bk.day == day) {
+                        bk.start = bk.start.minus(pushBack, ChronoUnit.MINUTES);
+                        bk.end = bk.end.minus(pushBack, ChronoUnit.MINUTES);
+                    }
                 }
                 return dayNames[day];
             } else {
                 return "";
             }
-        } else {
-            
+        } 
+        else if (this.start < this.end) {
             int i;
             ArrayList<Booking> bookings = courseSchedule.getBookings();
-            for (i=start + 1; i<end; i++) {
+            for (i=this.start + 1; i<this.end; i++) {
                 if (bookings.get(i - 1).getDay() != bookings.get(i).getDay()) {
                     break;
                 }
             }
             
-            EarlyDayLectureForkJoin left  = new EarlyDayLectureForkJoin(this.courseName, this.schedules, start, i - 1);
-            EarlyDayLectureForkJoin right = new EarlyDayLectureForkJoin(this.courseName, this.schedules, i, end);
+            EarlyDayLectureForkJoin left  = new EarlyDayLectureForkJoin(this.courseName, this.schedules, this.start, i - 1);
+            EarlyDayLectureForkJoin right = new EarlyDayLectureForkJoin(this.courseName, this.schedules, i, this.end);
+            
             left.fork();
-            if (i != end) {
-                String rightAns = right.compute();
-                String leftAns  = left.join();
-                return leftAns + " " + rightAns;
-            } else {
-                return left.join();
+            String rightAns = right.compute();
+            String leftAns  = left.join();
+            if (leftAns.equals("")) {
+                return rightAns;
             }
+            return leftAns + " " + rightAns;
          }
+        return "";
     }
     
     private LocalTime getEarliestSlot(int day) {
