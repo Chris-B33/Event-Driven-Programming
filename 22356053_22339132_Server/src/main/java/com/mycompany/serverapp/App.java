@@ -9,7 +9,6 @@ public class App {
     private static final int PORT = 1234;
     private static int clientConnections = 0;
     
-    
     public static void main(String[] args) {
         System.out.println("-".repeat(borderNum));
         System.out.println("[INITIALIZE] Opening Port " + PORT);
@@ -42,6 +41,4 @@ public class App {
         }
         catch(IOException e) {}
     }
-  
-    
 }

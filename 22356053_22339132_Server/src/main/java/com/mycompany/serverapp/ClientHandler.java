@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.*;
 
 public class ClientHandler implements Runnable {
     private static final String[] dayNames = {
@@ -19,12 +20,15 @@ public class ClientHandler implements Runnable {
     private BufferedReader input;
     private PrintWriter output;
     
+    private ExecutorService executor;
+    
     private String action;
     private String description;
     
     public ClientHandler(Socket _link, String _name) {
         this.name = _name;
         this.link = _link;
+        this.executor = Executors.newCachedThreadPool();
     }
     
     @Override
@@ -44,25 +48,29 @@ public class ClientHandler implements Runnable {
 
                 switch (action) {
                     case "ADD":
-                        addToSchedule();
+                        executor.execute(this::addToSchedule);
                         break;
                     case "REMOVE":
-                        removeFromSchedule();
+                        executor.execute(this::removeFromSchedule);
                         break;
                     case "DISPLAY":
-                        displaySchedule();
+                        executor.execute(this::displaySchedule);
                         break;
                     case "STOP":
-                        closeConnection();
+                        executor.execute(this::closeConnection);
                         break;
                     case "EARLY":
-                        tryEarlyLectures();
+                        executor.execute(this::tryEarlyLectures);
                         break;
                     default:
                         throw new IncorrectActionException();
                 }
             }
-        } catch (IncorrectActionException | IOException e) {}   
+        } catch (IncorrectActionException | IOException e) {
+            System.out.println("[ERROR]: " + e);
+            System.out.println("-".repeat(borderNum));
+            output.println(e.getMessage());
+        }   
     }
     
     /*
